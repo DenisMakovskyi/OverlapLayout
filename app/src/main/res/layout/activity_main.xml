@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="25dp"
+    tools:context=".MainActivity">
+
+    <ua.makovskyi.layout.OverlapLayout
+        android:id="@+id/l1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:padding="25dp"
+        app:ol_supportPadding="false"
+        app:ol_enabledAfterOverlapping="true"
+        app:ol_cornerRadius="10dp"
+        app:ol_backgroundColor="@color/mt_green_100"
+        app:ol_overlapColor="@color/mt_red_700_a50"
+        app:ol_overlapGravity="top"
+        app:ol_overlapPosition="front"
+        app:ol_overlapDuration="5000">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:text="Layout 1"
+                android:textSize="16sp"
+                android:textColor="@color/black"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="corners: 5dp, gravity: top,\nposition: front, duration: 5 sec"
+                android:textSize="16sp"
+                android:textColor="@color/black"/>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </ua.makovskyi.layout.OverlapLayout>
+
+    <ua.makovskyi.layout.OverlapLayout
+        android:id="@+id/l2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:padding="25dp"
+        app:ol_supportPadding="false"
+        app:ol_enabledAfterOverlapping="true"
+        app:ol_cornerRadius="10dp"
+        app:ol_backgroundColor="@color/mt_green_100"
+        app:ol_overlapColor="@color/mt_red_700_a50"
+        app:ol_overlapGravity="bottom"
+        app:ol_overlapPosition="back"
+        app:ol_overlapDuration="3000">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:text="Layout 2"
+                android:textSize="16sp"
+                android:textColor="@color/black"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="corners: 10dp, gravity: bottom,\nposition: back, duration: 3 sec"
+                android:textSize="16sp"
+                android:textColor="@color/black"/>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </ua.makovskyi.layout.OverlapLayout>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="OverlapLayout">
+        <attr name="ol_supportPadding" format="boolean"/>
+        <attr name="ol_enabledAfterOverlapping" format="boolean"/>
+
+        <attr name="ol_cornerRadius" format="dimension"/>
+        <attr name="ol_backgroundColor" format="color"/>
+
+        <attr name="ol_overlapColor" format="color"/>
+        <attr name="ol_overlapGravity" format="enum">
+            <enum name="top" value="0"/>
+            <enum name="bottom" value="1"/>
+        </attr>
+        <attr name="ol_overlapPosition" format="enum">
+            <enum name="back" value="0"/>
+            <enum name="front" value="1"/>
+        </attr>
+        <attr name="ol_overlapDuration" format="integer"/>
+    </declare-styleable>
+</resources>
