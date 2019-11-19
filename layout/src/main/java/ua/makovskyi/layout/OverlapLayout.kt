@@ -158,7 +158,7 @@ open class OverlapLayout(
         if (!isSupportPadding) {
             setPadding(0, 0, 0, 0)
         }
-        evaluateEnabledState()
+        evaluateDisabledState()
         setViewBackground(this, createRectDrawable(bgColor, cornerRadius))
     }
 
@@ -236,11 +236,16 @@ open class OverlapLayout(
 
     private fun evaluateEnabledState() {
         if (isEnabledAfterOverlapping) {
+            if (!isEnabled) {
+                isEnabled = true
+            }
+        }
+    }
+
+    private fun evaluateDisabledState() {
+        if (isEnabledAfterOverlapping) {
             if (isEnabled) {
                 isEnabled = false
-
-            } else if (!isEnabled) {
-                isEnabled = true
             }
         }
     }
