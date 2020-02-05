@@ -26,6 +26,28 @@ open class OverlapLayout(
     @AttrRes defStyleAttr: Int
 ) : FrameLayout(context, attributes, defStyleAttr) {
 
+    enum class OverlapPosition(val value: Int) {
+        BACK(0),
+        FRONT(1);
+
+        companion object {
+            private val map = values().associateBy(OverlapPosition::value)
+
+            fun fromInt(value: Int): OverlapPosition = requireNotNull(map[value]) {
+                "Unable to create enum from integer."
+            }
+        }
+    }
+
+    open class OverlapListener {
+
+        open fun onOverlapStarted() {}
+
+        open fun onOverlapCompleted() {}
+
+        open fun onOverlapCancelled() {}
+    }
+
     internal class SavedState : BaseSavedState {
 
         companion object {
@@ -64,23 +86,12 @@ open class OverlapLayout(
         }
     }
 
-    enum class OverlapPosition(val value: Int) {
-        BACK(0),
-        FRONT(1);
-
-        companion object {
-            private val map = values().associateBy(OverlapPosition::value)
-
-            fun fromInt(value: Int): OverlapPosition = requireNotNull(map[value]) {
-                "Unable to create enum from integer."
-            }
-        }
-    }
-
     companion object {
 
         private const val VIEW_TAG_OVERLAP = "view_overlap"
     }
+
+    var overlapListener: OverlapListener? = null
 
     private var isSupportPadding = true
     private var isEnabledAfterOverlapping = true
@@ -207,12 +218,14 @@ open class OverlapLayout(
                         super.onAnimationStart(animation, isReverse)
                         isOverlapped = false
                         isOverlapping = true
+                        overlapListener?.onOverlapStarted()
                     }
 
                     override fun onAnimationEnd(animation: Animator?) {
                         super.onAnimationEnd(animation)
                         isOverlapped = true
                         isOverlapping = false
+                        overlapListener?.onOverlapCompleted()
                         evaluateEnabledState()
                     }
 
@@ -220,6 +233,7 @@ open class OverlapLayout(
                         super.onAnimationCancel(animation)
                         isOverlapped = true
                         isOverlapping = false
+                        overlapListener?.onOverlapCancelled()
                         evaluateEnabledState()
                     }
                 })
