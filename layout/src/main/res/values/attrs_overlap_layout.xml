@@ -10,7 +10,9 @@
         <attr name="ol_overlapColor" format="color"/>
         <attr name="ol_overlapGravity" format="enum">
             <enum name="top" value="0"/>
-            <enum name="bottom" value="1"/>
+            <enum name="start" value="1"/>
+            <enum name="end" value="2"/>
+            <enum name="bottom" value="3"/>
         </attr>
         <attr name="ol_overlapPosition" format="enum">
             <enum name="back" value="0"/>

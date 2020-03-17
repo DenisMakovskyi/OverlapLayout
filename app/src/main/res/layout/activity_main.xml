@@ -59,13 +59,13 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
         android:padding="25dp"
-        android:visibility="gone"
+        android:visibility="visible"
         app:ol_supportPadding="false"
         app:ol_enabledAfterOverlapping="true"
         app:ol_cornerRadius="10dp"
         app:ol_backgroundColor="@color/mt_green_100"
         app:ol_overlapColor="@color/mt_red_700_a50"
-        app:ol_overlapGravity="bottom"
+        app:ol_overlapGravity="start"
         app:ol_overlapPosition="back"
         app:ol_overlapDuration="3000">
 
