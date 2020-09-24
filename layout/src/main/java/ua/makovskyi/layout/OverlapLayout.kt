@@ -15,6 +15,7 @@ import android.widget.FrameLayout
 import android.util.AttributeSet
 
 import androidx.annotation.AttrRes
+import androidx.annotation.IntRange
 
 /**
  * @author Denis Makovskyi
@@ -31,10 +32,13 @@ open class OverlapLayout(
         FRONT(1);
 
         companion object {
-            private val map = values().associateBy(OverlapPosition::value)
 
-            fun fromInt(value: Int): OverlapPosition = requireNotNull(map[value]) {
-                "Unable to create enum from integer."
+            fun fromInt(@IntRange(from = 0L, to = 1L) value: Int): OverlapPosition {
+                return when (value) {
+                    0 -> BACK
+                    1 -> FRONT
+                    else -> error("Can not create OverlapPosition from int value")
+                }
             }
         }
     }
@@ -73,9 +77,7 @@ open class OverlapLayout(
             isOverlapped = source.readByte().toInt() != 0
             overlapWidth = source.readInt()
             overlapHeight = source.readInt()
-            source.readString()?.let {
-                remainingTime = it.toLong()
-            }
+            remainingTime = source.readLong()
         }
 
         constructor(superState: Parcelable?) : super(superState)
@@ -85,12 +87,13 @@ open class OverlapLayout(
             out?.writeByte((if (isOverlapped) 1 else 0).toByte())
             out?.writeInt(overlapWidth)
             out?.writeInt(overlapHeight)
-            out?.writeString(remainingTime.toString())
+            out?.writeLong(remainingTime)
         }
     }
 
     companion object {
 
+        private const val VIEW_ID_OVERLAP = 1568
         private const val VIEW_TAG_OVERLAP = "view_overlap"
     }
 
@@ -122,24 +125,50 @@ open class OverlapLayout(
     init {
         if (attributes != null) {
             context.obtainStyledAttributes(attributes, R.styleable.OverlapLayout).apply {
-                isSupportPadding = getBoolean(R.styleable.OverlapLayout_ol_supportPadding, isSupportPadding)
-                isEnabledAfterOverlapping = getBoolean(R.styleable.OverlapLayout_ol_enabledAfterOverlapping, isEnabledAfterOverlapping)
+                isSupportPadding = getBoolean(
+                    R.styleable.OverlapLayout_ol_supportPadding,
+                    isSupportPadding
+                )
+                isEnabledAfterOverlapping = getBoolean(
+                    R.styleable.OverlapLayout_ol_enabledAfterOverlapping,
+                    isEnabledAfterOverlapping
+                )
                 //-
-                bgColor = getColor(R.styleable.OverlapLayout_ol_backgroundColor, bgColor)
-                cornerRadius = getDimensionPixelSize(R.styleable.OverlapLayout_ol_cornerRadius, cornerRadius.toInt()).toFloat()
+                bgColor = getColor(
+                    R.styleable.OverlapLayout_ol_backgroundColor,
+                    bgColor
+                )
+                cornerRadius = getDimensionPixelSize(
+                    R.styleable.OverlapLayout_ol_cornerRadius,
+                    cornerRadius.toInt()
+                ).toFloat()
                 //-
-                overlapColor = getColor(R.styleable.OverlapLayout_ol_overlapColor, overlapColor)
-                overlapGravity = when(getInt(R.styleable.OverlapLayout_ol_overlapGravity, overlapGravity)) {
+                overlapColor = getColor(
+                    R.styleable.OverlapLayout_ol_overlapColor,
+                    overlapColor
+                )
+                val gravity = getInt(
+                    R.styleable.OverlapLayout_ol_overlapGravity,
+                    overlapGravity
+                )
+                overlapGravity = when (gravity) {
                     0 -> Gravity.TOP
                     1 -> Gravity.START
                     2 -> Gravity.END
                     3 -> Gravity.BOTTOM
                     else -> throw IllegalArgumentException("Unsupported gravity")
                 }
-                overlapPosition = OverlapPosition.fromInt(getInt(R.styleable.OverlapLayout_ol_overlapPosition, overlapPosition.value))
-                overlapDuration = getInt(R.styleable.OverlapLayout_ol_overlapDuration, overlapDuration.toInt()).toLong()
-                recycle()
-            }
+                overlapPosition = OverlapPosition.fromInt(
+                    getInt(
+                        R.styleable.OverlapLayout_ol_overlapPosition,
+                        overlapPosition.value
+                    )
+                )
+                overlapDuration = getInt(
+                    R.styleable.OverlapLayout_ol_overlapDuration,
+                    overlapDuration.toInt()
+                ).toLong()
+            }.recycle()
         }
         applyParameters()
     }
@@ -178,14 +207,17 @@ open class OverlapLayout(
             setPadding(0, 0, 0, 0)
         }
         evaluateDisabledState()
-        setViewBackground(this, createRectDrawable(bgColor, cornerRadius))
+        setViewBackground(
+            this, createRectDrawable(bgColor, cornerRadius)
+        )
     }
 
     private fun createOverlap() {
-        if(!::overlapView.isInitialized) {
+        if (!::overlapView.isInitialized) {
             overlapView = View(context).also {
+                it.id = VIEW_ID_OVERLAP
                 it.tag = VIEW_TAG_OVERLAP
-                it.layoutParams = when(overlapGravity) {
+                it.layoutParams = when (overlapGravity) {
                     Gravity.TOP, Gravity.BOTTOM -> {
                         LayoutParams(measuredWidth, overlapHeight).apply {
                             gravity = overlapGravity
@@ -198,17 +230,21 @@ open class OverlapLayout(
                     }
                     else -> throw IllegalArgumentException("Unsupported gravity")
                 }
-                setViewBackground(it, createRectDrawable(overlapColor, cornerRadius))
-                when(overlapPosition) {
+                setViewBackground(
+                    it, createRectDrawable(overlapColor, cornerRadius)
+                )
+                when (overlapPosition) {
                     OverlapPosition.BACK -> addView(it, 0)
                     OverlapPosition.FRONT -> addView(it)
                 }
             }
 
         } else {
-            when(overlapGravity) {
-                Gravity.TOP, Gravity.BOTTOM -> overlapView.updateWidth(measuredWidth)
-                Gravity.START, Gravity.END -> overlapView.updateHeight(measuredHeight)
+            when (overlapGravity) {
+                Gravity.TOP, Gravity.BOTTOM ->
+                    overlapView.updateWidth(measuredWidth)
+                Gravity.START, Gravity.END ->
+                    overlapView.updateHeight(measuredHeight)
                 else -> throw IllegalArgumentException("Unsupported gravity")
             }
         }
@@ -229,13 +265,21 @@ open class OverlapLayout(
 
     private fun animateOverlap(duration: Long) {
         if (!isOverlapped && !isOverlapping) {
-            val valueAnimator = when(overlapGravity) {
-                Gravity.TOP, Gravity.BOTTOM -> ValueAnimator.ofInt(overlapView.measuredHeight, measuredHeight)
-                Gravity.START, Gravity.END -> ValueAnimator.ofInt(overlapView.measuredWidth, measuredWidth)
+            val valueAnimator = when (overlapGravity) {
+                Gravity.TOP, Gravity.BOTTOM ->
+                    ValueAnimator.ofInt(
+                        overlapView.measuredHeight,
+                        measuredHeight
+                    )
+                Gravity.START, Gravity.END ->
+                    ValueAnimator.ofInt(
+                        overlapView.measuredWidth,
+                        measuredWidth
+                    )
                 else -> throw IllegalArgumentException("Unsupported gravity")
             }
             valueAnimator.addUpdateListener { animation ->
-                when(overlapGravity) {
+                when (overlapGravity) {
                     Gravity.TOP, Gravity.BOTTOM -> {
                         overlapHeight = animation.animatedValue as Int
                         overlapView.updateHeight(overlapHeight)
@@ -278,9 +322,11 @@ open class OverlapLayout(
     }
 
     private fun animatedOverlap() {
-        when(overlapGravity) {
-            Gravity.TOP, Gravity.BOTTOM -> overlapView.updateHeight(measuredHeight)
-            Gravity.START, Gravity.END -> overlapView.updateWidth(measuredWidth)
+        when (overlapGravity) {
+            Gravity.TOP, Gravity.BOTTOM ->
+                overlapView.updateHeight(measuredHeight)
+            Gravity.START, Gravity.END ->
+                overlapView.updateWidth(measuredWidth)
             else -> throw IllegalArgumentException("Unsupported gravity")
         }
         evaluateEnabledState()
